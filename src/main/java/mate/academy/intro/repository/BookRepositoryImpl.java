@@ -1,7 +1,9 @@
 package mate.academy.intro.repository;
 
 import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
+import mate.academy.intro.dto.BookDto;
 import mate.academy.intro.exception.DataProcessingException;
 import mate.academy.intro.model.Book;
 import org.hibernate.Session;
@@ -43,5 +45,19 @@ public class BookRepositoryImpl implements BookRepository {
         } catch (Exception e) {
             throw new DataProcessingException("Can not get all books from DB", e);
         }
+    }
+
+    @Override
+    public BookDto getBookById(Long id) {
+        try (Session session = sessionFactory.openSession()) {
+            return session.get(BookDto.class, id);
+        } catch (Exception e) {
+            throw new DataProcessingException("Can not get book by ID from DB", e);
+        }
+    }
+
+    @Override
+    public Optional<Object> findById(Long id) {
+        return Optional.empty();
     }
 }
