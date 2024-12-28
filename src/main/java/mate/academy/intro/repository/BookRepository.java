@@ -12,5 +12,5 @@ public interface BookRepository {
 
     BookDto getBookById(Long id);
 
-    Optional<Object> findById(Long id);
+    Optional<BookDto> findById(Long id);
 }

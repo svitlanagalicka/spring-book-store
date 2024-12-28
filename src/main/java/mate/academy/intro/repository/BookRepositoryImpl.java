@@ -5,6 +5,8 @@ import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import mate.academy.intro.dto.BookDto;
 import mate.academy.intro.exception.DataProcessingException;
+import mate.academy.intro.exception.EntityNotFoundException;
+import mate.academy.intro.mapper.BookMapper;
 import mate.academy.intro.model.Book;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -15,6 +17,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public class BookRepositoryImpl implements BookRepository {
     private final SessionFactory sessionFactory;
+    private final BookMapper bookMapper;
 
     @Override
     public Book save(Book book) {
@@ -50,14 +53,18 @@ public class BookRepositoryImpl implements BookRepository {
     @Override
     public BookDto getBookById(Long id) {
         try (Session session = sessionFactory.openSession()) {
-            return session.get(BookDto.class, id);
+            Book book = session.get(Book.class, id);
+            if (book == null) {
+                throw new EntityNotFoundException("Book not found with ID " + id);
+            }
+            return bookMapper.bookToBookDto(book);
         } catch (Exception e) {
             throw new DataProcessingException("Can not get book by ID from DB", e);
         }
     }
 
     @Override
-    public Optional<Object> findById(Long id) {
-        return Optional.empty();
+    public Optional<BookDto> findById(Long id) {
+        return Optional.ofNullable(getBookById(id));
     }
 }

@@ -8,13 +8,11 @@ import mate.academy.intro.exception.EntityNotFoundException;
 import mate.academy.intro.mapper.BookMapper;
 import mate.academy.intro.model.Book;
 import mate.academy.intro.repository.BookRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @RequiredArgsConstructor
 @Service
 public class BookServiceImpl implements BookService {
-    @Autowired
     private final BookRepository bookRepository;
     private final BookMapper bookMapper;
 
@@ -33,7 +31,7 @@ public class BookServiceImpl implements BookService {
 
     @Override
     public BookDto getBookById(Long id) {
-        Book book = (Book) bookRepository.findById(id)
+        Book book = bookRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Book not found with id " + id));
         return bookMapper.bookToBookDto(book);
     }
