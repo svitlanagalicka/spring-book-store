@@ -1,0 +1,11 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1
+      author: svitlana
+      changes:
+        - createTable:
+            tableName: books
+            columns:
+              - column:
+                  name: deleted
+                  type: int
