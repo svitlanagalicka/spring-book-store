@@ -1,6 +1,5 @@
 package mate.academy.intro.service;
 
-import java.math.BigDecimal;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import mate.academy.intro.dto.BookDto;
@@ -51,10 +50,7 @@ public class BookServiceImpl implements BookService {
         Book book = bookRepository.findById(id)
                 .orElseThrow(()
                         -> new EntityNotFoundException("Cant find book by id " + id));
-        book.setTitle(bookDto.getTitle());
-        book.setAuthor(bookDto.getAuthor());
-        book.setIsbn(bookDto.getIsbn());
-        book.setPrice(BigDecimal.valueOf(bookDto.getPrice()));
+        book = bookMapper.updateBook(book, bookDto);
         return bookMapper.bookToBookDto(bookRepository.save(book));
     }
 }
