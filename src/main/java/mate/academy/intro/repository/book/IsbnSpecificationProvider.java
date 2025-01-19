@@ -12,11 +12,11 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class IsbnSpecificationProvider implements SpecificationProvider<Book> {
-    private final String isbn = "isbn";
+    private static final String ISBN_COLUMN = "isbn";
 
     @Override
     public String getKey() {
-        return isbn;
+        return ISBN_COLUMN;
     }
 
     public Specification<Book> getSpecification(String[] params) {
@@ -25,7 +25,7 @@ public class IsbnSpecificationProvider implements SpecificationProvider<Book> {
             public Predicate toPredicate(Root<Book> root,
                                          CriteriaQuery<?> query,
                                          CriteriaBuilder criteriaBuilder) {
-                return root.get(isbn)
+                return root.get(ISBN_COLUMN)
                         .in(Arrays.stream(params).toArray());
             }
         };

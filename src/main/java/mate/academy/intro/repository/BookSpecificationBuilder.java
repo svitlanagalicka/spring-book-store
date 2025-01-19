@@ -9,9 +9,9 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 @Component
 public class BookSpecificationBuilder implements SpecificationBuilder<Book> {
-    private final String title = "title";
-    private final String author = "author";
-    private final String isbn = "isbn";
+    private static final String TITLE_COLUMN = "title";
+    private static final String AUTHOR_COLUMN = "author";
+    private static final String ISBN_COLUMN = "isbn";
     private final SpecificationProviderManager<Book> bookSpecificationProviderManager;
 
     @Override
@@ -19,17 +19,17 @@ public class BookSpecificationBuilder implements SpecificationBuilder<Book> {
         Specification<Book> specification = Specification.where(null);
         if (searchParameters.author() != null && searchParameters.author().length > 0) {
             specification = specification
-                    .and(bookSpecificationProviderManager.getSpecificationProvider(author)
+                    .and(bookSpecificationProviderManager.getSpecificationProvider(AUTHOR_COLUMN)
                     .getSpecification(searchParameters.author()));
         }
         if (searchParameters.title() != null && searchParameters.title().length > 0) {
             specification = specification
-                    .and(bookSpecificationProviderManager.getSpecificationProvider(title)
+                    .and(bookSpecificationProviderManager.getSpecificationProvider(TITLE_COLUMN)
                     .getSpecification(searchParameters.title()));
         }
         if ((searchParameters.isbn() != null) && (searchParameters.isbn().length > 0)) {
             specification = specification
-                    .and(bookSpecificationProviderManager.getSpecificationProvider(isbn)
+                    .and(bookSpecificationProviderManager.getSpecificationProvider(ISBN_COLUMN)
                     .getSpecification(searchParameters.isbn()));
         }
         return specification;
