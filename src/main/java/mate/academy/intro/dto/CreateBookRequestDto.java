@@ -1,22 +1,26 @@
 package mate.academy.intro.dto;
 
 import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
+import java.math.BigDecimal;
 import lombok.Data;
-import lombok.NonNull;
 
 @Data
 public class CreateBookRequestDto {
-    @NonNull
+    @NotBlank
     private String title;
-    @NonNull
+    @NotBlank
     private String author;
-    @NonNull
+    @NotNull
+    @Size(max = 13, min = 13)
     private String isbn;
-    @NonNull
+    @NotNull
     @Min(value = 0)
-    private Double price;
-    @NonNull
+    private BigDecimal price;
+    @NotBlank
     private String description;
-    @NonNull
+    @NotBlank
     private String coverImage;
 }
