@@ -21,10 +21,8 @@ public class UserServiceImpl implements UserService {
         if (userRepository.existsByEmail(requestDto.getEmail())) {
             throw new RegistrationException("such email already exists");
         }
-        User user = new User();
-        user.setEmail(requestDto.getEmail());
-        user.setPassword(requestDto.getPassword());
-        User savedUser = userRepository.save(user);
-        return userMapper.userToUserDto(savedUser);
+        User user = userMapper.requestDtoToUser(requestDto);
+        userRepository.save(user);
+        return userMapper.userToUserDto(user);
     }
 }

@@ -1,5 +1,6 @@
 package mate.academy.intro.dto;
 
+import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
@@ -27,6 +28,11 @@ public class UserRegistrationRequestDto {
     @NotBlank
     private String lastName;
 
-    @NotBlank
+    @Length(max = 255)
     private String shippingAddress;
+
+    @AssertTrue(message = "Password and repeat password must be the same")
+    public boolean matchPasswords() {
+        return password != null && password.equals(repeatPassword);
+    }
 }
