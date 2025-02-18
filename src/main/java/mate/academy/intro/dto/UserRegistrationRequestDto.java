@@ -1,14 +1,15 @@
 package mate.academy.intro.dto;
 
-import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.Setter;
+import mate.academy.intro.annotation.FieldMatch;
 import org.hibernate.validator.constraints.Length;
 
 @Setter
 @Getter
+@FieldMatch(message = "Password and repeat password must be the same")
 public class UserRegistrationRequestDto {
     @NotBlank
     @Email
@@ -30,9 +31,4 @@ public class UserRegistrationRequestDto {
 
     @Length(max = 255)
     private String shippingAddress;
-
-    @AssertTrue(message = "Password and repeat password must be the same")
-    public boolean matchPasswords() {
-        return password != null && password.equals(repeatPassword);
-    }
 }
