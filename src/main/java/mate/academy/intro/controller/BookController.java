@@ -7,10 +7,8 @@ import java.awt.print.Pageable;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import mate.academy.intro.dto.BookDto;
-import mate.academy.intro.dto.BookDtoWithoutCategoryIds;
 import mate.academy.intro.dto.BookSearchParametersDto;
 import mate.academy.intro.dto.CreateBookRequestDto;
-import mate.academy.intro.model.Book;
 import mate.academy.intro.service.BookService;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -76,11 +74,5 @@ public class BookController {
     @Operation(summary = "Search books", description = "Search for books by parameters")
     public List<BookDto> searchBooks(BookSearchParametersDto searchParameters) {
         return bookService.search(searchParameters);
-    }
-
-    @GetMapping("/{id}/books")
-    BookDtoWithoutCategoryIds toDtoWithoutCategories(Book book) {
-        return new BookDtoWithoutCategoryIds(book.getId(),
-                book.getTitle(), book.getAuthor(), book.getDescription(), book.getPrice());
     }
 }

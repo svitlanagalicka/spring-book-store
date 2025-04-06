@@ -6,7 +6,7 @@ import java.awt.print.Pageable;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import mate.academy.intro.dto.BookDto;
-import mate.academy.intro.dto.CategoryDto;
+import mate.academy.intro.dto.CreateCategoryRequestDto;
 import mate.academy.intro.service.BookService;
 import mate.academy.intro.service.CategoryService;
 import org.springframework.http.HttpStatus;
@@ -32,7 +32,8 @@ public class CategoryController {
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "Save a new category", description = "Create a new category entry")
-    public CategoryDto createCategory(@RequestBody @Valid CategoryDto categoryDto) {
+    public CreateCategoryRequestDto createCategory(
+            @RequestBody @Valid CreateCategoryRequestDto categoryDto) {
         return categoryService.save(categoryDto);
     }
 
@@ -40,7 +41,7 @@ public class CategoryController {
     @PreAuthorize("hasRole('ROLE_USER')")
     @Operation(summary = "Get all categories",
             description = "Get a list of all available categories")
-    public List<CategoryDto> getAll(Pageable pageable) {
+    public List<CreateCategoryRequestDto> getAll(Pageable pageable) {
         return categoryService.findAll(pageable);
     }
 
@@ -48,7 +49,7 @@ public class CategoryController {
     @PreAuthorize("hasRole('ROLE_USER')")
     @Operation(summary = "Get a category by its ID",
             description = "Get detailed information about a category by its ID")
-    public CategoryDto getCategoryById(@PathVariable Long id) {
+    public CreateCategoryRequestDto getCategoryById(@PathVariable Long id) {
         return categoryService.getById(id);
     }
 
@@ -56,8 +57,8 @@ public class CategoryController {
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @Operation(summary = "Update an existing category",
             description = "Update the information of an existing category")
-    public CategoryDto updateCategory(@PathVariable Long id,
-                                      @RequestBody CategoryDto categoryDto) {
+    public CreateCategoryRequestDto updateCategory(@PathVariable Long id,
+                                             @RequestBody CreateCategoryRequestDto categoryDto) {
         return categoryService.update(id, categoryDto);
     }
 

@@ -7,5 +7,7 @@ public record BookDtoWithoutCategoryIds(
         String title,
         String author,
         String description,
-        BigDecimal price) {
+        BigDecimal price,
+        String isbn,
+        String coverImage) {
 }
