@@ -29,7 +29,7 @@ public class CategoryController {
     private final BookService bookService;
 
     @PostMapping
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "Save a new category", description = "Create a new category entry")
     public CreateCategoryRequestDto createCategory(
@@ -38,7 +38,7 @@ public class CategoryController {
     }
 
     @GetMapping
-    @PreAuthorize("hasRole('ROLE_USER')")
+    @PreAuthorize("hasRole('USER')")
     @Operation(summary = "Get all categories",
             description = "Get a list of all available categories")
     public List<CreateCategoryRequestDto> getAll(Pageable pageable) {
@@ -46,7 +46,7 @@ public class CategoryController {
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasRole('ROLE_USER')")
+    @PreAuthorize("hasRole('USER')")
     @Operation(summary = "Get a category by its ID",
             description = "Get detailed information about a category by its ID")
     public CreateCategoryRequestDto getCategoryById(@PathVariable Long id) {
@@ -54,7 +54,7 @@ public class CategoryController {
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     @Operation(summary = "Update an existing category",
             description = "Update the information of an existing category")
     public CreateCategoryRequestDto updateCategory(@PathVariable Long id,
@@ -64,7 +64,7 @@ public class CategoryController {
 
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     @Operation(summary = "Delete a category by ID",
             description = "Delete a category from the DB by ID")
     public void deleteCategory(@PathVariable Long id) {
