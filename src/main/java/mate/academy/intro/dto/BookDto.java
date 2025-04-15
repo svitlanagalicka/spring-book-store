@@ -1,11 +1,11 @@
 package mate.academy.intro.dto;
 
 import java.math.BigDecimal;
+import java.util.List;
 import lombok.Data;
-import mate.academy.intro.model.Book;
 
 @Data
-public class BookDto extends Book {
+public class BookDto {
     private Long id;
     private String title;
     private String author;
@@ -13,4 +13,5 @@ public class BookDto extends Book {
     private BigDecimal price;
     private String description;
     private String coverImage;
+    private List<Long> categoryIds;
 }
