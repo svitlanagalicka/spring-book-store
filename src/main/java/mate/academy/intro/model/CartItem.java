@@ -17,14 +17,14 @@ import org.hibernate.annotations.SQLRestriction;
 @Getter
 @Setter
 @SQLRestriction(value = "is_deleted=false")
-@Table(name = "cartItem")
+@Table(name = "cart_item")
 public class CartItem {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "shoppingCart_id", nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "shopping_cart_id", nullable = false)
     private ShoppingCart shoppingCart;
 
     @ManyToOne(fetch = FetchType.LAZY)

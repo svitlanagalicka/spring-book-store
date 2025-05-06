@@ -1,10 +1,13 @@
 package mate.academy.intro.controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import mate.academy.intro.dto.CartItemRequestDto;
 import mate.academy.intro.dto.ShoppingCartDto;
+import mate.academy.intro.dto.UpdateCartItemDto;
 import mate.academy.intro.service.ShoppingCartService;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -18,7 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/api/cart ")
+@RequestMapping("/cart")
 public class ShoppingCartController {
     private final ShoppingCartService shoppingCartService;
 
@@ -27,25 +30,30 @@ public class ShoppingCartController {
         return shoppingCartService.getCartByUser(email);
     }
 
-    @PostMapping("api/cart/items/{cartItemId}")
+    @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public void addItemToCart(@RequestParam String email,
-                              @RequestBody CartItemRequestDto cartItemRequestDto) {
-        shoppingCartService.addItemToCart(email, cartItemRequestDto);
+    public ShoppingCartDto addItemToCart(Authentication authentication,
+                              @RequestBody @Valid CartItemRequestDto cartItemRequestDto) {
+        String email = authentication.getName();
+        return shoppingCartService.addItemToCart(email, cartItemRequestDto);
     }
 
-    @PutMapping("/api/cart/items/{cartItemId}")
+    @PutMapping("/cart-items/{cartItemId}")
     @ResponseStatus(HttpStatus.OK)
-    public void updateItemQuantity(@PathVariable Long cartItemId,
-                                   @RequestParam Long shoppingCartId,
-                                   @RequestParam Long bookId,
-                                   @RequestParam int quantity) {
-        shoppingCartService.updateItemQuantity(cartItemId, shoppingCartId, bookId, quantity);
+    public void updateItemQuantity(Authentication authentication,
+                                   @PathVariable Long cartItemId,
+                                   @RequestBody @Valid UpdateCartItemDto item) {
+        shoppingCartService.updateItemQuantity(authentication.getName(),
+                cartItemId,
+                item.getShoppingCartId(),
+                item.getBookId(),
+                item.getQuantity());
     }
 
-    @DeleteMapping("/api/cart/items/{cartItemId}")
+    @DeleteMapping("/cart-items/{cartItemId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteItem(@PathVariable Long cartItemId) {
-        shoppingCartService.removeItem(cartItemId);
+    public void deleteItem(Authentication authentication,
+                           @PathVariable Long cartItemId) {
+        shoppingCartService.removeItem(cartItemId, authentication.getName());
     }
 }

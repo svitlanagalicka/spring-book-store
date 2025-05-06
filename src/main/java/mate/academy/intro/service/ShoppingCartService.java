@@ -2,16 +2,18 @@ package mate.academy.intro.service;
 
 import mate.academy.intro.dto.CartItemRequestDto;
 import mate.academy.intro.dto.ShoppingCartDto;
+import mate.academy.intro.model.User;
 
 public interface ShoppingCartService {
 
+    public void createShoppingCartForUser(User user);
+
     ShoppingCartDto getCartByUser(String email);
 
-    void addItemToCart(String username, CartItemRequestDto cartItemRequestDto);
+    ShoppingCartDto addItemToCart(String username, CartItemRequestDto cartItemRequestDto);
 
-    void updateItemQuantity(Long cartItemId, Long shoppingCartId, Long bookId, int quantity);
+    void updateItemQuantity(String email, Long cartItemId,
+                            Long shoppingCartId, Long bookId, int quantity);
 
-    void removeItem(Long cartItemId);
-
-    void clearCart(String email);
+    void removeItem(Long cartItemId, String email);
 }
