@@ -17,7 +17,7 @@ import org.hibernate.annotations.SQLRestriction;
 @Getter
 @Setter
 @SQLRestriction(value = "is_deleted=false")
-@Table(name = "cart_item")
+@Table(name = "cart_items")
 public class CartItem {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -27,7 +27,7 @@ public class CartItem {
     @JoinColumn(name = "shopping_cart_id", nullable = false)
     private ShoppingCart shoppingCart;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "book_id", nullable = false)
     private Book book;
 

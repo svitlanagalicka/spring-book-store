@@ -1,21 +1,11 @@
 package mate.academy.intro.dto;
 
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 @Data
 public class CartItemDto {
-
-    @NotNull
     private Long id;
-
-    @NotNull
     private Long bookId;
-
-    @NotNull
     private String bookTitle;
-
-    @Min(value = 1)
     private int quantity;
 }

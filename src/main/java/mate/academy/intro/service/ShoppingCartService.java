@@ -1,19 +1,21 @@
 package mate.academy.intro.service;
 
+import jakarta.validation.Valid;
 import mate.academy.intro.dto.CartItemRequestDto;
 import mate.academy.intro.dto.ShoppingCartDto;
+import mate.academy.intro.dto.UpdateCartItemDto;
 import mate.academy.intro.model.User;
 
 public interface ShoppingCartService {
 
     public void createShoppingCartForUser(User user);
 
-    ShoppingCartDto getCartByUser(String email);
+    ShoppingCartDto getCartByUser(Long userId);
 
-    ShoppingCartDto addItemToCart(String username, CartItemRequestDto cartItemRequestDto);
+    ShoppingCartDto addItemToCart(Long userId, CartItemRequestDto cartItemRequestDto);
 
-    void updateItemQuantity(String email, Long cartItemId,
-                            Long shoppingCartId, Long bookId, int quantity);
+    ShoppingCartDto updateItemQuantity(Long userId, Long cartItemId,
+                                       @Valid UpdateCartItemDto quantity);
 
-    void removeItem(Long cartItemId, String email);
+    void removeItem(Long cartItemId, Long userId);
 }

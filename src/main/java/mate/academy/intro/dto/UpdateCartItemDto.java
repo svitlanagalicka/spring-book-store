@@ -1,18 +1,11 @@
 package mate.academy.intro.dto;
 
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 import lombok.Data;
 
 @Data
 public class UpdateCartItemDto {
 
-    @NotNull
-    private Long shoppingCartId;
-
-    @NotNull
-    private Long bookId;
-
-    @Min(value = 1)
+    @Positive
     private int quantity;
 }
