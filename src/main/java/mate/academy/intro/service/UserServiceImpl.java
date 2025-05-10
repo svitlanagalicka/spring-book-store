@@ -22,6 +22,7 @@ public class UserServiceImpl implements UserService {
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
     private final RoleRepository roleRepository;
+    private final ShoppingCartService shoppingCartService;
 
     @Override
     public UserResponseDto register(UserRegistrationRequestDto requestDto)
@@ -34,6 +35,7 @@ public class UserServiceImpl implements UserService {
         Role role = roleRepository.findByRole(Role.RoleName.USER);
         user.setRoles(Set.of(role));
         userRepository.save(user);
+        shoppingCartService.createShoppingCartForUser(user);
         return userMapper.userToUserDto(user);
     }
 }

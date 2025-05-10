@@ -7,6 +7,7 @@ import mate.academy.intro.dto.CreateBookRequestDto;
 import mate.academy.intro.model.Book;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingTarget;
+import org.mapstruct.Named;
 
 @Mapper(config = MapperConfig.class)
 public interface BookMapper {
@@ -18,4 +19,11 @@ public interface BookMapper {
     Book updateBook(@MappingTarget Book book, CreateBookRequestDto bookDto);
 
     BookDtoWithoutCategoryIds toDtoWithoutCategories(Book book);
+
+    @Named("bookFromId")
+    default Book bookFromId(Long id) {
+        Book book = new Book();
+        book.setId(id);
+        return book;
+    }
 }

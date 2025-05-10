@@ -1,6 +1,5 @@
 package mate.academy.intro.service;
 
-import java.awt.print.Pageable;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -15,6 +14,7 @@ import mate.academy.intro.model.Category;
 import mate.academy.intro.repository.BookRepository;
 import mate.academy.intro.repository.BookSpecificationBuilder;
 import mate.academy.intro.repository.CategoryRepository;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
@@ -30,15 +30,13 @@ public class BookServiceImpl implements BookService {
     @Override
     public BookDto save(CreateBookRequestDto requestDto) {
         Book book = bookMapper.toModel(requestDto);
-        if (requestDto.getCategoriesId() != null) {
-            Set<Category> categories = requestDto.getCategoriesId().stream()
-                    .map(id -> categoryRepository.findById(id)
-                            .orElseThrow(() ->
-                                    new EntityNotFoundException("Can not find category with id: "
-                                            + id)))
-                    .collect(Collectors.toSet());
-            book.setCategories(categories);
-        }
+        Set<Category> categories = requestDto.getCategoriesId().stream()
+                .map(id -> categoryRepository.findById(id)
+                        .orElseThrow(() ->
+                                new EntityNotFoundException("Can not find category with id: "
+                                        + id)))
+                .collect(Collectors.toSet());
+        book.setCategories(categories);
         return bookMapper.bookToBookDto(bookRepository.save(book));
     }
 
