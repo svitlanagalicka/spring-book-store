@@ -70,7 +70,7 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
                         -> new EntityNotFoundException("Cart item not found:" + cartItemId));
         cartItem.setQuantity(quantity.getQuantity());
         cartItemRepository.save(cartItem);
-        return null;
+        return shoppingCartMapper.toShoppingCartDto(shoppingCart);
     }
 
     @Override
