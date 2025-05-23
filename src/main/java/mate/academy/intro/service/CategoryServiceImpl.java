@@ -1,7 +1,6 @@
 package mate.academy.intro.service;
 
 import jakarta.validation.Valid;
-import java.awt.print.Pageable;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import mate.academy.intro.dto.BookDtoWithoutCategoryIds;
@@ -13,6 +12,8 @@ import mate.academy.intro.mapper.CategoryMapper;
 import mate.academy.intro.model.Category;
 import mate.academy.intro.repository.BookRepository;
 import mate.academy.intro.repository.CategoryRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 @RequiredArgsConstructor
@@ -24,10 +25,9 @@ public class CategoryServiceImpl implements CategoryService {
     private final BookMapper bookMapper;
 
     @Override
-    public List<CategoryDto> findAll(Pageable pageable) {
-        return categoryRepository.findAll().stream()
-                .map(categoryMapper::toCategoryDto)
-                .toList();
+    public Page<CategoryDto> findAll(Pageable pageable) {
+        return categoryRepository.findAll(pageable)
+                .map(categoryMapper::toCategoryDto);
     }
 
     @Override

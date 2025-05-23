@@ -9,7 +9,6 @@ public class OrderItemRequestDto {
     @NotNull
     private Long bookId;
 
-    @NotNull
     @Positive
     private int quantity;
 }

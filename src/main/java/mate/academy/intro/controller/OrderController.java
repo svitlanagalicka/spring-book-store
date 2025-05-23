@@ -9,6 +9,8 @@ import mate.academy.intro.dto.OrderRequestDto;
 import mate.academy.intro.dto.OrderResponseDto;
 import mate.academy.intro.dto.UpdateOrderStatusRequestDto;
 import mate.academy.intro.service.OrderService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -34,12 +36,20 @@ public class OrderController {
         return orderService.placeOrder(orderRequestDto, userId);
     }
 
-    @GetMapping
+    @GetMapping("/order")
+    @PreAuthorize("hasRole('USER')")
+    @Operation(summary = "Get all orders",
+            description = "Get a list of all available orders")
+    public Page<OrderResponseDto> getAll(Pageable pageable) {
+        return orderService.findAll(pageable);
+    }
+
+    @GetMapping("/order/history")
     @PreAuthorize("hasRole('ROLE_USER')")
     @Operation(summary = "Get order history",
             description = "Returns a list of all orders placed by the user")
-    public List<OrderResponseDto> getOrderHistory(@RequestParam Long userId) {
-        return orderService.getOrderHistory(userId);
+    public Page<OrderResponseDto> getOrderHistory(@RequestParam Long userId, Pageable pageable) {
+        return orderService.getOrderHistory(userId, pageable);
     }
 
     @GetMapping("/{orderId}/items")
@@ -66,7 +76,7 @@ public class OrderController {
     @Operation(summary = "Update order status",
             description = "Allows an admin to update the status of an order")
     public OrderResponseDto updateOrderStatus(@PathVariable Long id,
-                                              @RequestBody UpdateOrderStatusRequestDto
+                                              @Valid @RequestBody UpdateOrderStatusRequestDto
                                                       updateOrderStatusRequestDto) {
         return orderService.updateOrderStatus(id, updateOrderStatusRequestDto);
     }

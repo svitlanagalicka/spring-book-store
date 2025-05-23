@@ -1,7 +1,7 @@
 package mate.academy.intro.dto;
 
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotEmpty;
 import java.util.List;
 import lombok.Data;
 
@@ -10,6 +10,6 @@ public class OrderRequestDto {
     @NotBlank
     private String shippingAddress;
 
-    @NotNull
+    @NotEmpty
     private List<OrderItemRequestDto> items;
 }
