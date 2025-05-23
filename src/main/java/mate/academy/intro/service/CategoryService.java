@@ -1,13 +1,14 @@
 package mate.academy.intro.service;
 
-import java.awt.print.Pageable;
 import java.util.List;
 import mate.academy.intro.dto.BookDtoWithoutCategoryIds;
 import mate.academy.intro.dto.CategoryDto;
 import mate.academy.intro.dto.CreateCategoryRequestDto;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 public interface CategoryService {
-    List<CategoryDto> findAll(Pageable pageable);
+    Page<CategoryDto> findAll(Pageable pageable);
 
     CategoryDto getById(Long id);
 
