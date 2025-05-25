@@ -1,6 +1,6 @@
 databaseChangeLog:
   - changeSet:
-      id: insert-users
+      id: insert-users-table
       author: svitlana
       changes:
         - insert:
@@ -20,7 +20,7 @@ databaseChangeLog:
                   value: 'Doe'
               - column:
                   name: is_deleted
-                  value: 'false'
+                  valueBoolean: 'false'
         - insert:
             tableName: users
             columns:
@@ -38,4 +38,4 @@ databaseChangeLog:
                   value: 'Doe'
               - column:
                   name: is_deleted
-                  value: 'false'
+                  valueBoolean: 'false'
