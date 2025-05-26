@@ -2,7 +2,7 @@ package mate.academy.intro.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
-import java.util.List;
+import java.util.Set;
 import lombok.Data;
 
 @Data
@@ -11,5 +11,5 @@ public class OrderRequestDto {
     private String shippingAddress;
 
     @NotEmpty
-    private List<OrderItemRequestDto> items;
+    private Set<OrderItemRequestDto> items;
 }

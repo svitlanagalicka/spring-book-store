@@ -11,6 +11,7 @@ import mate.academy.intro.dto.OrderRequestDto;
 import mate.academy.intro.dto.OrderResponseDto;
 import mate.academy.intro.dto.UpdateOrderStatusRequestDto;
 import mate.academy.intro.exception.EntityNotFoundException;
+import mate.academy.intro.exception.OrderProcessingException;
 import mate.academy.intro.mapper.OrderItemMapper;
 import mate.academy.intro.mapper.OrderMapper;
 import mate.academy.intro.model.CartItem;
@@ -50,7 +51,7 @@ public class OrderServiceImpl implements OrderService {
         ShoppingCart shoppingCart = findShoppingCartByUserId(userId);
 
         if (shoppingCart.getCartItems().isEmpty()) {
-            throw new IllegalStateException("Shopping cart is empty");
+            throw new OrderProcessingException("Shopping cart is empty");
         }
 
         Order order = new Order();
@@ -68,32 +69,6 @@ public class OrderServiceImpl implements OrderService {
         shoppingCartRepository.save(shoppingCart);
 
         return orderMapper.toOrderDto(order);
-    }
-
-    private User findUserById(Long userId) {
-        return userRepository.findById(userId)
-                .orElseThrow(() -> new EntityNotFoundException("Can't find user by id: " + userId));
-    }
-
-    private ShoppingCart findShoppingCartByUserId(Long userId) {
-        return shoppingCartRepository.findByUserId(userId)
-                .orElseThrow(()
-                        -> new EntityNotFoundException("Can't find shopping cart by user id: "
-                        + userId));
-    }
-
-    private Set<OrderItem> createOrderItems(Order order, ShoppingCart shoppingCart) {
-        Set<OrderItem> orderItems = new HashSet<>();
-        for (CartItem cartItem : shoppingCart.getCartItems()) {
-            OrderItem orderItem = new OrderItem();
-            orderItem.setOrder(order);
-            orderItem.setBook(cartItem.getBook());
-            orderItem.setQuantity(cartItem.getQuantity());
-            orderItem.setPrice(cartItem.getBook().getPrice()
-                    .multiply(BigDecimal.valueOf(cartItem.getQuantity())));
-            orderItems.add(orderItem);
-        }
-        return orderItems;
     }
 
     @Override
@@ -130,5 +105,31 @@ public class OrderServiceImpl implements OrderService {
         order.setStatus(updateOrderStatusRequestDto.getStatus());
         orderRepository.save(order);
         return orderMapper.toOrderDto(order);
+    }
+
+    private User findUserById(Long userId) {
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("Can't find user by id: " + userId));
+    }
+
+    private ShoppingCart findShoppingCartByUserId(Long userId) {
+        return shoppingCartRepository.findByUserId(userId)
+                .orElseThrow(()
+                        -> new EntityNotFoundException("Can't find shopping cart by user id: "
+                        + userId));
+    }
+
+    private Set<OrderItem> createOrderItems(Order order, ShoppingCart shoppingCart) {
+        Set<OrderItem> orderItems = new HashSet<>();
+        for (CartItem cartItem : shoppingCart.getCartItems()) {
+            OrderItem orderItem = new OrderItem();
+            orderItem.setOrder(order);
+            orderItem.setBook(cartItem.getBook());
+            orderItem.setQuantity(cartItem.getQuantity());
+            orderItem.setPrice(cartItem.getBook().getPrice()
+                    .multiply(BigDecimal.valueOf(cartItem.getQuantity())));
+            orderItems.add(orderItem);
+        }
+        return orderItems;
     }
 }
