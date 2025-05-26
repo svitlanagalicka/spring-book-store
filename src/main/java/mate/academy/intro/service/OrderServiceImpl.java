@@ -28,6 +28,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+@Transactional
 @RequiredArgsConstructor
 @Service
 public class OrderServiceImpl implements OrderService {
@@ -44,7 +45,6 @@ public class OrderServiceImpl implements OrderService {
                 .map(orderMapper::toOrderDto);
     }
 
-    @Transactional
     @Override
     public OrderResponseDto placeOrder(OrderRequestDto orderRequestDto, Long userId) {
         User user = findUserById(userId);
