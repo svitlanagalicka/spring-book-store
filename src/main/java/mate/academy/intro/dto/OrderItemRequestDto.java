@@ -7,6 +7,7 @@ import lombok.Data;
 @Data
 public class OrderItemRequestDto {
     @NotNull
+    @Positive
     private Long bookId;
 
     @Positive

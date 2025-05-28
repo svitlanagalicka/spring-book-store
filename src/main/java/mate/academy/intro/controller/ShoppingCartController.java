@@ -31,7 +31,7 @@ public class ShoppingCartController {
     @PreAuthorize("hasRole('ROLE_USER')")
     @Operation(summary = "Get shopping cart", description = "Get cart for user")
     public ShoppingCartDto getShoppingCart(Authentication authentication) {
-        User user = ((User) authentication.getPrincipal());
+        User user = (User) authentication.getPrincipal();
         return shoppingCartService.getCartByUser(user.getId());
     }
 

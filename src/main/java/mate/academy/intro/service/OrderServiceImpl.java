@@ -59,9 +59,13 @@ public class OrderServiceImpl implements OrderService {
         order.setStatus(Status.NEW);
         order.setShippingAddress(orderRequestDto.getShippingAddress());
 
-        BigDecimal total = BigDecimal.ZERO;
         Set<OrderItem> orderItems = createOrderItems(order, shoppingCart);
         order.setOrderItems(orderItems);
+
+        BigDecimal total = BigDecimal.ZERO;
+        for (OrderItem item : orderItems) {
+            total = total.add(item.getPrice());
+        }
         order.setTotal(total);
 
         orderRepository.save(order);
@@ -80,7 +84,7 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public List<OrderItemResponseDto> getOrderItems(Long orderId, Long userId) {
         Order order = orderRepository.findById(orderId)
-                .orElseThrow(() -> new RuntimeException("Order not found:" + orderId));
+                .orElseThrow(() -> new EntityNotFoundException("Order not found:" + orderId));
         return order.getOrderItems().stream()
                 .map(orderItemMapper::toOrderItemDto)
                 .toList();
@@ -90,7 +94,7 @@ public class OrderServiceImpl implements OrderService {
     public OrderItemResponseDto getOrderItemById(Long orderId, Long itemId, Long userId) {
         OrderItem orderItem = orderItemRepository
                 .findByIdAndOrderIdAndUserId(itemId, orderId, userId)
-                .orElseThrow(() -> new RuntimeException(
+                .orElseThrow(() -> new EntityNotFoundException(
                         "Order item not found for itemId=" + itemId + ", "
                                 + "orderId=" + orderId + ", userId=" + userId));
         return orderItemMapper.toOrderItemDto(orderItem);
