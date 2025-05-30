@@ -2,7 +2,6 @@ package mate.academy.intro.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
-import java.awt.print.Pageable;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import mate.academy.intro.dto.BookDto;
@@ -10,6 +9,8 @@ import mate.academy.intro.dto.CategoryDto;
 import mate.academy.intro.dto.CreateCategoryRequestDto;
 import mate.academy.intro.service.BookService;
 import mate.academy.intro.service.CategoryService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -42,7 +43,7 @@ public class CategoryController {
     @PreAuthorize("hasRole('USER')")
     @Operation(summary = "Get all categories",
             description = "Get a list of all available categories")
-    public List<CategoryDto> getAll(Pageable pageable) {
+    public Page<CategoryDto> getAll(Pageable pageable) {
         return categoryService.findAll(pageable);
     }
 
