@@ -1,0 +1,2 @@
+INSERT INTO books (id, title, author, isbn, price, description, cover_image) VALUES
+(1, 'Effective Java', 'Joshua Bloch', '9780134685991', 799, 'Best Java practices', 'https://example.com/effective-java.jpg');

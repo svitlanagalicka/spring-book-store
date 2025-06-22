@@ -1,11 +1,8 @@
 package mate.academy.intro.controller;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -13,24 +10,21 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.math.BigDecimal;
-import java.util.Collections;
 import java.util.List;
+import mate.academy.intro.config.TestUtil;
 import mate.academy.intro.dto.BookDto;
-import mate.academy.intro.dto.BookSearchParametersDto;
 import mate.academy.intro.dto.CreateBookRequestDto;
-import mate.academy.intro.exception.EntityNotFoundException;
-import mate.academy.intro.service.BookService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -44,9 +38,6 @@ class BookControllerTest {
     @Autowired
     private ObjectMapper objectMapper = new ObjectMapper();
 
-    @MockitoBean
-    private BookService bookService;
-
     @BeforeEach
     void beforeAll(@Autowired WebApplicationContext applicationContext) {
         mockMvc = MockMvcBuilders
@@ -58,11 +49,22 @@ class BookControllerTest {
     @Test
     @DisplayName("Successfully returns the list of books")
     @WithMockUser(roles = "USER")
+    @Sql(scripts = "classpath:database/books/add-books.sql",
+            executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     void findAll_returnListOfBooks() throws Exception {
-        List<BookDto> books = List.of(new BookDto());
-        when(bookService.findAll(any(Pageable.class))).thenReturn(books);
-        mockMvc.perform(get("/books"))
-                .andExpect(status().isOk());
+        MvcResult result = mockMvc.perform(get("/books")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .param("page", "0")
+                        .param("size", "20"))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        List<BookDto> actual = objectMapper
+                .readValue(result.getResponse().getContentAsString(),
+                        new TypeReference<List<BookDto>>() {});
+
+        assertNotNull(actual);
+        assertFalse(actual.isEmpty());
     }
 
     @Test
@@ -75,11 +77,17 @@ class BookControllerTest {
     @Test
     @DisplayName("Successfully finds books by ID")
     @WithMockUser(roles = "USER")
+    @Sql(scripts = "classpath:database/books/add-books.sql",
+            executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     void getBookById_returnBook_success() throws Exception {
-        BookDto bookDto = new BookDto();
-        when(bookService.getBookById(1L)).thenReturn(bookDto);
-        mockMvc.perform(get("/books/1"))
-                .andExpect(status().isOk());
+        MvcResult result = mockMvc.perform(get("/books/1")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andReturn();
+        BookDto actual = objectMapper.readValue(result.getResponse().getContentAsString(),
+                BookDto.class);
+        assertNotNull(actual);
+        assertNotNull(actual.getId());
     }
 
     @Test
@@ -87,7 +95,6 @@ class BookControllerTest {
     @WithMockUser(roles = "USER")
     void getBookById_returnNotFound_bookNotExist() throws Exception {
         Long id = 999L;
-        when(bookService.getBookById(id)).thenThrow(new EntityNotFoundException("Book not found"));
         mockMvc.perform(get("/books/" + id))
                 .andExpect(status().isNotFound());
     }
@@ -95,27 +102,16 @@ class BookControllerTest {
     @WithMockUser(roles = "ADMIN")
     @Test
     @DisplayName("When the book was successfully saved")
+    @Sql(scripts = "classpath:database/books/delete-books.sql",
+            executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(scripts = "classpath:database/books/delete-books.sql",
+            executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Sql(scripts = "classpath:database/books/categories/add-categories.sql",
+            executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     void save_validRequestDto_returnSuccess() throws Exception {
-        CreateBookRequestDto requestDto = new CreateBookRequestDto();
-        requestDto.setAuthor("Joshua Bloch");
-        requestDto.setTitle("Effective Java");
-        requestDto.setPrice(BigDecimal.valueOf(799));
-        requestDto.setDescription("Best Java practices");
-        requestDto.setIsbn("9780134685991");
-        requestDto.setCoverImage("https://example.com/effective-java.jpg");
-        requestDto.setCategoriesId(List.of(1L, 2L));
+        CreateBookRequestDto requestDto = TestUtil.createBookRequestDto();
 
-        BookDto expected = new BookDto();
-        expected.setId(1L);
-        expected.setAuthor(requestDto.getAuthor());
-        expected.setTitle(requestDto.getTitle());
-        expected.setPrice(requestDto.getPrice());
-        expected.setDescription(requestDto.getDescription());
-        expected.setIsbn(requestDto.getIsbn());
-        expected.setCoverImage(requestDto.getCoverImage());
-        expected.setCategoryIds(requestDto.getCategoriesId());
-
-        when(bookService.save(any(CreateBookRequestDto.class))).thenReturn(expected);
+        BookDto expected = TestUtil.createBookDto(1L);
 
         String jsonRequest = objectMapper.writeValueAsString(requestDto);
         MvcResult result = mockMvc.perform(post("/books")
@@ -149,17 +145,32 @@ class BookControllerTest {
     @Test
     @WithMockUser(roles = "ADMIN")
     @DisplayName("Return 200 OK when book is updated successfully by ADMIN")
+    @Sql(scripts = "classpath:database/books/delete-books.sql",
+            executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(scripts = "classpath:database/books/add-books.sql",
+            executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(scripts = "classpath:database/books/delete-books.sql",
+            executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     void updateBook_returnUpdateBook_success() throws Exception {
+        Long id = 1L;
         CreateBookRequestDto requestDto = new CreateBookRequestDto();
-        BookDto updatedDto = new BookDto();
-
-        when(bookService.updateBook(eq(1L), any(CreateBookRequestDto.class)))
-                .thenReturn(updatedDto);
-
-        mockMvc.perform(put("/books/1")
+        requestDto.setTitle("Updated Title");
+        requestDto.setAuthor("Updated Author");
+        requestDto.setPrice(BigDecimal.valueOf(999));
+        requestDto.setDescription("Updated Description");
+        requestDto.setIsbn("9876543210987");
+        requestDto.setCoverImage("https://example.com/updated.jpg");
+        requestDto.setCategoriesId(List.of(1L, 2L));
+        MvcResult result = mockMvc.perform(put("/books/{id}", id)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(requestDto)))
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andReturn();
+        BookDto actual = objectMapper.readValue(result.getResponse().getContentAsString(),
+                BookDto.class);
+        assertNotNull(actual);
+        assertEquals(requestDto.getAuthor(), actual.getAuthor());
+        assertEquals(requestDto.getTitle(), actual.getTitle());
     }
 
     @Test
@@ -167,8 +178,6 @@ class BookControllerTest {
     @DisplayName("Return NOT_FOUND when book does not exist")
     void updateBook_returnNotFound_bookNotExist() throws Exception {
         CreateBookRequestDto requestDto = new CreateBookRequestDto();
-        when(bookService.updateBook(eq(999L), any(CreateBookRequestDto.class)))
-                .thenThrow(new EntityNotFoundException("Book not found"));
 
         String jsonRequest = objectMapper.writeValueAsString(requestDto);
 
@@ -181,8 +190,14 @@ class BookControllerTest {
     @Test
     @WithMockUser(roles = "ADMIN")
     @DisplayName("Book successfully deleted by administrator")
+    @Sql(scripts = "classpath:database/books/delete-books.sql",
+            executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(scripts = "classpath:database/books/add-books.sql",
+            executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(scripts = "classpath:database/books/delete-books.sql",
+            executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     void delete_returnNoContent_success() throws Exception {
-        mockMvc.perform(delete("/books/1"))
+        mockMvc.perform(delete("/books/{id}", 1))
                 .andExpect(status().isNoContent());
     }
 
@@ -190,8 +205,6 @@ class BookControllerTest {
     @WithMockUser(roles = "ADMIN")
     @DisplayName("Return NOT_FOUND when book does not exist")
     void delete_returnNotFound_bookNotExist() throws Exception {
-        doThrow(new EntityNotFoundException("Book not found"))
-                .when(bookService).deleteById(999L);
         mockMvc.perform(delete("/books/999"))
                 .andExpect(status().isNotFound());
     }
@@ -199,24 +212,31 @@ class BookControllerTest {
     @Test
     @WithMockUser(roles = "USER")
     @DisplayName("Book search returns a list of books based on the specified parameters")
+    @Sql(scripts = "classpath:database/books/add-books.sql",
+            executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(scripts = "classpath:database/books/delete-books.sql",
+            executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     void searchBooks_returnSearchBooks_success() throws Exception {
-        BookDto bookDto = new BookDto();
-        List<BookDto> expected = List.of(bookDto);
-
-        when(bookService.search(any(BookSearchParametersDto.class)))
-                .thenReturn(expected);
-        mockMvc.perform(get("/books/search")
+        MvcResult result = mockMvc.perform(get("/books/search")
                 .param("title", "Effective Java")
-                .param("author", "Joshua Bloch"))
-                .andExpect(status().isOk());
+                .param("author", "Joshua Bloch")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andReturn();
+        List<BookDto> actual = objectMapper.readValue(result.getResponse().getContentAsString(),
+                new TypeReference<List<BookDto>>() {});
+        assertNotNull(actual);
+        assertFalse(actual.isEmpty());
+
+        BookDto firstBook = actual.get(0);
+        assertEquals("Effective Java", firstBook.getTitle());
+        assertEquals("Joshua Bloch", firstBook.getAuthor());
     }
 
     @Test
     @WithMockUser(roles = "USER")
     @DisplayName("Book search returns an empty list if no books are found")
     void searchBooks_returnEmptyList_whenBooksNotFound() throws Exception {
-        when(bookService.search(any(BookSearchParametersDto.class)))
-                .thenReturn(Collections.emptyList());
         mockMvc.perform(get("/books/search")
                         .param("title", "Unknown")
                         .param("author", "Nobody"))
