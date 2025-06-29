@@ -14,9 +14,9 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.math.BigDecimal;
 import java.util.List;
-import mate.academy.intro.config.TestUtil;
 import mate.academy.intro.dto.BookDto;
 import mate.academy.intro.dto.CreateBookRequestDto;
+import mate.academy.intro.util.TestUtil;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -106,7 +106,7 @@ class BookControllerTest {
             executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(scripts = "classpath:database/books/delete-books.sql",
             executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
-    @Sql(scripts = "classpath:database/books/categories/add-categories.sql",
+    @Sql(scripts = "classpath:database/categories/add-categories.sql",
             executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     void save_validRequestDto_returnSuccess() throws Exception {
         CreateBookRequestDto requestDto = TestUtil.createBookRequestDto();

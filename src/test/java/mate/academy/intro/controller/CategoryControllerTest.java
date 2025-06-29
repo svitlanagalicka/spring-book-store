@@ -10,9 +10,9 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import mate.academy.intro.config.TestUtil;
 import mate.academy.intro.dto.CategoryDto;
 import mate.academy.intro.dto.CreateCategoryRequestDto;
+import mate.academy.intro.util.TestUtil;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -77,7 +77,7 @@ class CategoryControllerTest {
     @Test
     @DisplayName("Successfully returns the list of categories")
     @WithMockUser(roles = "USER")
-    @Sql(scripts = "classpath:database/books/categories/add-categories.sql",
+    @Sql(scripts = "classpath:database/categories/add-categories.sql",
             executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     void getAll_returnListOfCategories() throws Exception {
         mockMvc.perform(get("/categories")
@@ -98,9 +98,9 @@ class CategoryControllerTest {
     @Test
     @DisplayName("Successfully finds categories by ID")
     @WithMockUser(roles = "USER")
-    @Sql(scripts = "classpath:database/books/categories/delete-categories.sql",
+    @Sql(scripts = "classpath:database/categories/delete-categories.sql",
             executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-    @Sql(scripts = "classpath:database/books/categories/add-categories.sql",
+    @Sql(scripts = "classpath:database/categories/add-categories.sql",
             executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     void getCategoryById_returnCategoryId_success() throws Exception {
         CategoryDto categoryDto = new CategoryDto();
@@ -128,9 +128,9 @@ class CategoryControllerTest {
     @Test
     @DisplayName("Return 200 OK when category is updated successfully by ADMIN")
     @WithMockUser(roles = "ADMIN")
-    @Sql(scripts = "classpath:database/books/categories/delete-categories.sql",
+    @Sql(scripts = "classpath:database/categories/delete-categories.sql",
             executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-    @Sql(scripts = "classpath:database/books/categories/add-categories.sql",
+    @Sql(scripts = "classpath:database/categories/add-categories.sql",
             executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     void updateCategory_returnUpdateCategory_success() throws Exception {
         Long id = 1L;
@@ -165,11 +165,11 @@ class CategoryControllerTest {
     @Test
     @DisplayName("Category successfully deleted by administrator")
     @WithMockUser(roles = "ADMIN")
-    @Sql(scripts = "classpath:database/books/categories/delete-categories.sql",
+    @Sql(scripts = "classpath:database/categories/delete-categories.sql",
             executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-    @Sql(scripts = "classpath:database/books/categories/add-categories.sql",
+    @Sql(scripts = "classpath:database/categories/add-categories.sql",
             executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-    @Sql(scripts = "classpath:database/books/categories/delete-categories.sql",
+    @Sql(scripts = "classpath:database/categories/delete-categories.sql",
             executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     void deleteCategory_returnNoContent_success() throws Exception {
         mockMvc.perform(delete("/categories/1"))

@@ -7,8 +7,8 @@ databaseChangeLog:
             tableName: users_roles
             columns:
               - column:
-                 name: user_id
-                 value: 1
+                  name: user_id
+                  value: 1
               - column:
-                 name: role_id
-                 value: 2
+                  name: role_id
+                  value: 2
