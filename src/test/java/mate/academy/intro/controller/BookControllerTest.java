@@ -65,6 +65,11 @@ class BookControllerTest {
 
         assertNotNull(actual);
         assertFalse(actual.isEmpty());
+
+        for (BookDto book : actual) {
+            assertNotNull(book.getTitle());
+            assertNotNull(book.getAuthor());
+        }
     }
 
     @Test
@@ -84,10 +89,20 @@ class BookControllerTest {
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andReturn();
+
+        BookDto expected = new BookDto();
+        expected.setId(1L);
+        expected.setTitle("Effective Java");
+        expected.setAuthor("Joshua Bloch");
+        expected.setPrice(new BigDecimal(799));
+
         BookDto actual = objectMapper.readValue(result.getResponse().getContentAsString(),
                 BookDto.class);
-        assertNotNull(actual);
-        assertNotNull(actual.getId());
+
+        assertEquals(expected.getId(), actual.getId());
+        assertEquals(expected.getTitle(), actual.getTitle());
+        assertEquals(expected.getAuthor(), actual.getAuthor());
+        assertEquals(0, actual.getPrice().compareTo(expected.getPrice()));
     }
 
     @Test
@@ -122,9 +137,8 @@ class BookControllerTest {
 
         BookDto actual = objectMapper.readValue(result.getResponse()
                 .getContentAsString(), BookDto.class);
-        assertNotNull(actual);
-        assertNotNull(actual.getId());
         assertEquals(expected.getTitle(), actual.getTitle());
+        assertEquals(expected.getAuthor(), actual.getAuthor());
         assertEquals(expected.getPrice(), actual.getPrice());
     }
 

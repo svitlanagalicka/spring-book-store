@@ -56,9 +56,9 @@ class CategoryControllerTest {
                 .andReturn();
         CategoryDto actual = objectMapper.readValue(result.getResponse().getContentAsString(),
                 CategoryDto.class);
-        assertNotNull(actual);
         assertEquals(expected.getId(), actual.getId());
         assertEquals(expected.getName(), actual.getName());
+        assertEquals(expected.getDescription(), actual.getDescription());
     }
 
     @Test
@@ -105,15 +105,24 @@ class CategoryControllerTest {
     void getCategoryById_returnCategoryId_success() throws Exception {
         CategoryDto categoryDto = new CategoryDto();
         categoryDto.setId(1L);
-        categoryDto.setName("Science");
+        categoryDto.setName("Animals");
+        categoryDto.setDescription("All about animals");
         MvcResult result = mockMvc.perform(get("/categories/1")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andReturn();
+
+        CategoryDto expected = new CategoryDto();
+        expected.setId(1L);
+        expected.setName("Animal");
+        expected.setDescription("All about animals");
+
         CategoryDto actual = objectMapper.readValue(result.getResponse().getContentAsString(),
                 CategoryDto.class);
         assertNotNull(actual);
-        assertNotNull(actual.getId());
+        assertEquals(expected.getId(), actual.getId());
+        assertEquals(expected.getName(), actual.getName());
+        assertEquals(expected.getDescription(), actual.getDescription());
     }
 
     @Test
@@ -134,18 +143,20 @@ class CategoryControllerTest {
             executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     void updateCategory_returnUpdateCategory_success() throws Exception {
         Long id = 1L;
-        CreateCategoryRequestDto requestDto = TestUtil.createCategoryRequestDto();
-        requestDto.setName("Animal");
+        CreateCategoryRequestDto expected = TestUtil.createCategoryRequestDto();
+        expected.setName("Animal");
+        expected.setDescription("Updated description");
 
         MvcResult result = mockMvc.perform(put("/categories/1")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(requestDto)))
+                        .content(objectMapper.writeValueAsString(expected)))
                 .andExpect(status().isOk())
                 .andReturn();
         CategoryDto actual = objectMapper.readValue(result.getResponse().getContentAsString(),
                 CategoryDto.class);
         assertNotNull(actual);
-        assertEquals(requestDto.getName(), actual.getName());
+        assertEquals(expected.getName(), actual.getName());
+        assertEquals(expected.getDescription(), actual.getDescription());
     }
 
     @Test
