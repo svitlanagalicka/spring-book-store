@@ -63,13 +63,11 @@ class BookControllerTest {
                 .readValue(result.getResponse().getContentAsString(),
                         new TypeReference<List<BookDto>>() {});
 
-        assertNotNull(actual);
-        assertFalse(actual.isEmpty());
-
-        for (BookDto book : actual) {
-            assertNotNull(book.getTitle());
-            assertNotNull(book.getAuthor());
-        }
+        List<BookDto> expected = List.of(new BookDto(1L, "Effective Java",
+                "Joshua Bloch", "9780134685991",
+                new BigDecimal("799.00"), "Best Java practices",
+                "https://example.com/effective-java.jpg", List.of(1L, 2L)));
+        assertEquals(expected, actual);
     }
 
     @Test
@@ -94,15 +92,16 @@ class BookControllerTest {
         expected.setId(1L);
         expected.setTitle("Effective Java");
         expected.setAuthor("Joshua Bloch");
-        expected.setPrice(new BigDecimal(799));
+        expected.setIsbn("9780134685991");
+        expected.setDescription("Best Java practices");
+        expected.setPrice(new BigDecimal("799.00"));
+        expected.setCategoryIds(List.of(1L, 2L));
+        expected.setCoverImage("https://example.com/effective-java.jpg");
 
         BookDto actual = objectMapper.readValue(result.getResponse().getContentAsString(),
                 BookDto.class);
 
-        assertEquals(expected.getId(), actual.getId());
-        assertEquals(expected.getTitle(), actual.getTitle());
-        assertEquals(expected.getAuthor(), actual.getAuthor());
-        assertEquals(0, actual.getPrice().compareTo(expected.getPrice()));
+        assertEquals(expected,actual);
     }
 
     @Test
@@ -137,9 +136,7 @@ class BookControllerTest {
 
         BookDto actual = objectMapper.readValue(result.getResponse()
                 .getContentAsString(), BookDto.class);
-        assertEquals(expected.getTitle(), actual.getTitle());
-        assertEquals(expected.getAuthor(), actual.getAuthor());
-        assertEquals(expected.getPrice(), actual.getPrice());
+        assertEquals(expected, actual);
     }
 
     @WithMockUser(roles = "ADMIN")
@@ -166,7 +163,6 @@ class BookControllerTest {
     @Sql(scripts = "classpath:database/books/delete-books.sql",
             executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     void updateBook_returnUpdateBook_success() throws Exception {
-        Long id = 1L;
         CreateBookRequestDto requestDto = new CreateBookRequestDto();
         requestDto.setTitle("Updated Title");
         requestDto.setAuthor("Updated Author");
@@ -175,6 +171,18 @@ class BookControllerTest {
         requestDto.setIsbn("9876543210987");
         requestDto.setCoverImage("https://example.com/updated.jpg");
         requestDto.setCategoriesId(List.of(1L, 2L));
+        Long id = 1L;
+
+        BookDto expected = new BookDto();
+        expected.setId(id);
+        expected.setTitle("Updated Title");
+        expected.setAuthor("Updated Author");
+        expected.setPrice(BigDecimal.valueOf(999));
+        expected.setDescription("Updated Description");
+        expected.setIsbn("9876543210987");
+        expected.setCoverImage("https://example.com/updated.jpg");
+        expected.setCategoryIds(List.of(1L, 2L));
+
         MvcResult result = mockMvc.perform(put("/books/{id}", id)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(requestDto)))
@@ -182,9 +190,7 @@ class BookControllerTest {
                 .andReturn();
         BookDto actual = objectMapper.readValue(result.getResponse().getContentAsString(),
                 BookDto.class);
-        assertNotNull(actual);
-        assertEquals(requestDto.getAuthor(), actual.getAuthor());
-        assertEquals(requestDto.getTitle(), actual.getTitle());
+        assertEquals(expected, actual);
     }
 
     @Test

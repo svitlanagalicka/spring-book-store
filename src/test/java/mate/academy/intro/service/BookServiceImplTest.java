@@ -12,6 +12,7 @@ import static org.mockito.Mockito.when;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import mate.academy.intro.dto.BookDto;
 import mate.academy.intro.dto.BookSearchParametersDto;
 import mate.academy.intro.dto.CreateBookRequestDto;
@@ -22,6 +23,7 @@ import mate.academy.intro.model.Category;
 import mate.academy.intro.repository.BookRepository;
 import mate.academy.intro.repository.BookSpecificationBuilder;
 import mate.academy.intro.repository.CategoryRepository;
+import mate.academy.intro.util.TestUtil;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -46,18 +48,8 @@ class BookServiceImplTest {
     @Test
     @DisplayName("Saves the book if the entered data is correct")
     void save_returnSavedBookDto_whenInputIsValid() {
-        CreateBookRequestDto requestDto = new CreateBookRequestDto();
-        requestDto.setCategoriesId(List.of(1L));
-        Category category = new Category();
-        category.setId(1L);
-
-        Book book = new Book();
-        book.setTitle("Head First Java");
-        book.setAuthor("Kathy Sierra");
-        book.setIsbn("9780596009205");
-        book.setPrice(BigDecimal.valueOf(799));
-        book.setDescription("Introductory Java book in fun style");
-        book.setCoverImage("https://example.com/headfirst.jpg");
+        Category category = TestUtil.createCategory();
+        Book book = TestUtil.createBook();
 
         Book savedBook = new Book();
         savedBook.setId(1L);
@@ -67,12 +59,17 @@ class BookServiceImplTest {
         savedBook.setPrice(book.getPrice());
         savedBook.setDescription(book.getDescription());
         savedBook.setCoverImage(book.getCoverImage());
-        BookDto expectedDto = new BookDto();
+        savedBook.setCategories(Set.of(category));
+
+        CreateBookRequestDto requestDto = TestUtil.createBookRequestDto();
+        BookDto expectedDto = TestUtil.createBookDto(1L);
 
         when(bookMapper.toModel(requestDto)).thenReturn(book);
         when(categoryRepository.findById(1L)).thenReturn(Optional.of(category));
         when(bookRepository.save(book)).thenReturn(savedBook);
         when(bookMapper.bookToBookDto(savedBook)).thenReturn(expectedDto);
+        when(bookRepository.findByIdWithCategory(savedBook.getId()))
+                .thenReturn(Optional.of(savedBook));
 
         BookDto result = bookService.save(requestDto);
 
@@ -86,15 +83,9 @@ class BookServiceImplTest {
     @Test
     @DisplayName("Gives an error if incorrect data is entered")
     void save_throwEntityNotFoundException_whenCategoryNotFound() {
-        CreateBookRequestDto requestDto = new CreateBookRequestDto();
+        CreateBookRequestDto requestDto = TestUtil.createBookRequestDto();
         requestDto.setCategoriesId(List.of(1L, 999L));
-        Book book = new Book();
-        book.setTitle("Head First Java");
-        book.setAuthor("Kathy Sierra");
-        book.setIsbn("9780596009205");
-        book.setPrice(BigDecimal.valueOf(799));
-        book.setDescription("Introductory Java book in fun style");
-        book.setCoverImage("https://example.com/headfirst.jpg");
+        Book book = TestUtil.createBook();
 
         when(bookMapper.toModel(requestDto)).thenReturn(book);
         when(categoryRepository.findById(1L)).thenReturn(Optional.of(new Category()));
@@ -112,13 +103,7 @@ class BookServiceImplTest {
     @Test
     @DisplayName("Returns the book by identifier if it exists")
     void getBookById_returnBookDto_whenBookExist() {
-        Book book = new Book();
-        book.setTitle("Head First Java");
-        book.setAuthor("Kathy Sierra");
-        book.setIsbn("9780596009205");
-        book.setPrice(BigDecimal.valueOf(799));
-        book.setDescription("Introductory Java book in fun style");
-        book.setCoverImage("https://example.com/headfirst.jpg");
+        Book book = TestUtil.createBook();
 
         BookDto bookDto = new BookDto();
         bookDto.setId(1L);
@@ -206,8 +191,10 @@ class BookServiceImplTest {
         BookDto updatedBookDto = new BookDto();
 
         when(bookRepository.findById(id)).thenReturn(Optional.of(book));
+        when(categoryRepository.findById(1L)).thenReturn(Optional.of(new Category()));
         when(bookMapper.updateBook(book, requestDto)).thenReturn(updatedBook);
         when(bookRepository.save(updatedBook)).thenReturn(updatedBook);
+        when(bookRepository.findByIdWithCategory(id)).thenReturn(Optional.of(updatedBook));
         when(bookMapper.bookToBookDto(updatedBook)).thenReturn(updatedBookDto);
 
         BookDto result = bookService.updateBook(id, requestDto);
@@ -216,13 +203,14 @@ class BookServiceImplTest {
         verify(bookMapper).updateBook(book, requestDto);
         verify(bookRepository).save(updatedBook);
         verify(bookMapper).bookToBookDto(updatedBook);
+        verify(categoryRepository).findById(1L);
     }
 
     @Test
     @DisplayName("Returns an error when updating a non-existent book")
     void updateBook_throwEntityNotFoundException_whenBookNotFound() {
         Long id = 999L;
-        CreateBookRequestDto requestDto = new CreateBookRequestDto();
+        CreateBookRequestDto requestDto = TestUtil.createBookRequestDto();
         when(bookRepository.findById(id)).thenReturn(Optional.empty());
         EntityNotFoundException exception = assertThrows(EntityNotFoundException.class,
                 () -> bookService.updateBook(id, requestDto));

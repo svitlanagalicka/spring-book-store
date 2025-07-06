@@ -1,5 +1,6 @@
 package mate.academy.intro.service;
 
+import jakarta.transaction.Transactional;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -27,6 +28,7 @@ public class BookServiceImpl implements BookService {
     private final CategoryRepository categoryRepository;
 
     @Override
+    @Transactional
     public BookDto save(CreateBookRequestDto requestDto) {
         Book book = bookMapper.toModel(requestDto);
         Set<Category> categories = requestDto.getCategoriesId().stream()
@@ -36,7 +38,11 @@ public class BookServiceImpl implements BookService {
                                         + id)))
                 .collect(Collectors.toSet());
         book.setCategories(categories);
-        return bookMapper.bookToBookDto(bookRepository.save(book));
+        Book saved = bookRepository.save(book);
+        Book savedBook = bookRepository.findByIdWithCategory(saved.getId())
+                .orElseThrow(()
+                        -> new EntityNotFoundException("Can not find book after saving"));
+        return bookMapper.bookToBookDto(savedBook);
     }
 
     @Override
@@ -63,12 +69,23 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
+    @Transactional
     public BookDto updateBook(Long id, CreateBookRequestDto bookDto) {
         Book book = bookRepository.findById(id)
                 .orElseThrow(()
                         -> new EntityNotFoundException("Cant find book by id " + id));
         book = bookMapper.updateBook(book, bookDto);
-        return bookMapper.bookToBookDto(bookRepository.save(book));
+        Set<Category> categories = bookDto.getCategoriesId().stream()
+                .map(categoryId -> categoryRepository.findById(categoryId)
+                        .orElseThrow(()
+                                -> new EntityNotFoundException("Can not find category by id"
+                                + categoryId)))
+                .collect(Collectors.toSet());
+        book.setCategories(categories);
+        bookRepository.save(book);
+        Book updatedBook = bookRepository.findByIdWithCategory(id).orElseThrow(()
+                -> new EntityNotFoundException("Can not find book after saving by id" + id));
+        return bookMapper.bookToBookDto(updatedBook);
     }
 
     @Override

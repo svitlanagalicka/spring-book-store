@@ -6,6 +6,8 @@ import mate.academy.intro.dto.BookDto;
 import mate.academy.intro.dto.CategoryDto;
 import mate.academy.intro.dto.CreateBookRequestDto;
 import mate.academy.intro.dto.CreateCategoryRequestDto;
+import mate.academy.intro.model.Book;
+import mate.academy.intro.model.Category;
 
 public class TestUtil {
     public static CreateBookRequestDto createBookRequestDto() {
@@ -47,6 +49,24 @@ public class TestUtil {
         categoryDto.setName("Animal");
         categoryDto.setDescription("All about animals");
         return categoryDto;
+    }
+
+    public static Book createBook() {
+        Book book = new Book();
+        book.setTitle("Effective Java");
+        book.setAuthor("Joshua Bloch");
+        book.setIsbn("9780134685991");
+        book.setPrice(BigDecimal.valueOf(799));
+        book.setDescription("Best Java practices");
+        book.setCoverImage("https://example.com/effective-java.jpg");
+        return book;
+    }
+
+    public static Category createCategory() {
+        Category category = new Category();
+        category.setName("Programming");
+        category.setDescription("All about programming");
+        return category;
     }
 }
 

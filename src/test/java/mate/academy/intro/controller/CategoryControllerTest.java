@@ -1,7 +1,6 @@
 package mate.academy.intro.controller;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -56,9 +55,7 @@ class CategoryControllerTest {
                 .andReturn();
         CategoryDto actual = objectMapper.readValue(result.getResponse().getContentAsString(),
                 CategoryDto.class);
-        assertEquals(expected.getId(), actual.getId());
-        assertEquals(expected.getName(), actual.getName());
-        assertEquals(expected.getDescription(), actual.getDescription());
+        assertEquals(expected, actual);
     }
 
     @Test
@@ -119,10 +116,7 @@ class CategoryControllerTest {
 
         CategoryDto actual = objectMapper.readValue(result.getResponse().getContentAsString(),
                 CategoryDto.class);
-        assertNotNull(actual);
-        assertEquals(expected.getId(), actual.getId());
-        assertEquals(expected.getName(), actual.getName());
-        assertEquals(expected.getDescription(), actual.getDescription());
+        assertEquals(expected, actual);
     }
 
     @Test
@@ -143,7 +137,7 @@ class CategoryControllerTest {
             executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     void updateCategory_returnUpdateCategory_success() throws Exception {
         Long id = 1L;
-        CreateCategoryRequestDto expected = TestUtil.createCategoryRequestDto();
+        CategoryDto expected = TestUtil.createCategoryDto(id);
         expected.setName("Animal");
         expected.setDescription("Updated description");
 
@@ -154,9 +148,7 @@ class CategoryControllerTest {
                 .andReturn();
         CategoryDto actual = objectMapper.readValue(result.getResponse().getContentAsString(),
                 CategoryDto.class);
-        assertNotNull(actual);
-        assertEquals(expected.getName(), actual.getName());
-        assertEquals(expected.getDescription(), actual.getDescription());
+        assertEquals(expected, actual);
     }
 
     @Test

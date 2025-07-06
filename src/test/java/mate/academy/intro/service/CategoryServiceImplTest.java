@@ -18,6 +18,7 @@ import mate.academy.intro.model.Book;
 import mate.academy.intro.model.Category;
 import mate.academy.intro.repository.BookRepository;
 import mate.academy.intro.repository.CategoryRepository;
+import mate.academy.intro.util.TestUtil;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -44,8 +45,8 @@ class CategoryServiceImplTest {
     @DisplayName("Returns category by id if it exists")
     void getById_returnCategoryDto_whenCategoryExist() {
         Long id = 1L;
-        Category category = new Category();
-        CategoryDto categoryDto = new CategoryDto();
+        Category category = TestUtil.createCategory();
+        CategoryDto categoryDto = TestUtil.createCategoryDto(id);
         when(categoryRepository.findById(id)).thenReturn(Optional.of(category));
         when(categoryMapper.toCategoryDto(category)).thenReturn(categoryDto);
         CategoryDto result = categoryService.getById(id);
@@ -65,8 +66,8 @@ class CategoryServiceImplTest {
     @Test
     @DisplayName("Saves the category if the correct input data is specified")
     void save_returnCategoryDto_whenInputIsValid() {
-        CreateCategoryRequestDto requestDto = new CreateCategoryRequestDto();
-        Category category = new Category();
+        CreateCategoryRequestDto requestDto = TestUtil.createCategoryRequestDto();
+        Category category = TestUtil.createCategory();
         Category saved = new Category();
         CategoryDto expected = new CategoryDto();
 
@@ -81,7 +82,7 @@ class CategoryServiceImplTest {
     @Test
     @DisplayName("Should throw RuntimeException when categoryMapper fails during save")
     void save_throwException_whenMapperFails() {
-        CreateCategoryRequestDto requestDto = new CreateCategoryRequestDto();
+        CreateCategoryRequestDto requestDto = TestUtil.createCategoryRequestDto();
         when(categoryMapper.toEntity(requestDto))
                 .thenThrow(new RuntimeException("Failed to map category request DTO to entity"));
         assertThrows(RuntimeException.class, () -> categoryService.save(requestDto));
@@ -91,7 +92,7 @@ class CategoryServiceImplTest {
     @DisplayName("Updates the category if it exists")
     void update_returnUpdatedCategoryDto_whenCategoryExist() {
         Long id = 1L;
-        CreateCategoryRequestDto requestDto = new CreateCategoryRequestDto();
+        CreateCategoryRequestDto requestDto = TestUtil.createCategoryRequestDto();
         Category existingCategory = new Category();
         CategoryDto expectedCategoryDto = new CategoryDto();
         when(categoryRepository.findById(id)).thenReturn(Optional.of(existingCategory));
@@ -105,7 +106,7 @@ class CategoryServiceImplTest {
     @DisplayName("Throw EntityNotFoundException when category with given ID does not exist")
     void update_throwEntityNotFoundException_whenCategoryNotFound() {
         Long id = 999L;
-        CreateCategoryRequestDto requestDto = new CreateCategoryRequestDto();
+        CreateCategoryRequestDto requestDto = TestUtil.createCategoryRequestDto();
         when(categoryRepository.findById(id)).thenReturn(Optional.empty());
         EntityNotFoundException exception = assertThrows(EntityNotFoundException.class,
                 () -> categoryService.update(id, requestDto));
