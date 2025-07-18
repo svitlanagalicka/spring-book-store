@@ -51,6 +51,8 @@ class BookControllerTest {
     @WithMockUser(roles = "USER")
     @Sql(scripts = "classpath:database/books/add-books.sql",
             executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(scripts = "classpath:database/books/delete-books.sql",
+            executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     void findAll_returnListOfBooks() throws Exception {
         MvcResult result = mockMvc.perform(get("/books")
                         .contentType(MediaType.APPLICATION_JSON)
