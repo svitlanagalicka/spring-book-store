@@ -29,7 +29,7 @@ public class OrderController {
     private final OrderService orderService;
 
     @PostMapping
-    @PreAuthorize("hasRole('ROLE_USER')")
+    @PreAuthorize("hasRole('USER')")
     @Operation(summary = "Place an order",
             description = "Place an order based on items in the shopping cart")
     public OrderResponseDto placeOrder(@Valid @RequestBody OrderRequestDto orderRequestDto,
@@ -47,7 +47,7 @@ public class OrderController {
     }
 
     @GetMapping("/order/history")
-    @PreAuthorize("hasRole('ROLE_USER')")
+    @PreAuthorize("hasRole('USER')")
     @Operation(summary = "Get order history",
             description = "Returns a list of all orders placed by the user")
     public Page<OrderResponseDto> getOrderHistory(Authentication authentication,
@@ -57,7 +57,7 @@ public class OrderController {
     }
 
     @GetMapping("/{orderId}/items")
-    @PreAuthorize("hasRole('ROLE_USER')")
+    @PreAuthorize("hasRole('USER')")
     @Operation(summary = "Get items from a specific order",
             description = "Returns a list of items")
     public List<OrderItemResponseDto> getOrderItems(@PathVariable Long orderId,
@@ -67,7 +67,7 @@ public class OrderController {
     }
 
     @GetMapping("/{orderId}/items/{itemId}")
-    @PreAuthorize("hasRole('ROLE_USER')")
+    @PreAuthorize("hasRole('USER')")
     @Operation(summary = "Get specific item from order",
             description = "Returns detailed information about item in a user's order")
     public OrderItemResponseDto getOrderItemById(@PathVariable Long orderId,
@@ -78,7 +78,7 @@ public class OrderController {
     }
 
     @PatchMapping("/{id}")
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     @Operation(summary = "Update order status",
             description = "Allows an admin to update the status of an order")
     public OrderResponseDto updateOrderStatus(@PathVariable Long id,
