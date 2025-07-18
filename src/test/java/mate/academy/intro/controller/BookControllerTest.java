@@ -49,6 +49,8 @@ class BookControllerTest {
     @Test
     @DisplayName("Successfully returns the list of books")
     @WithMockUser(roles = "USER")
+    @Sql(scripts = "classpath:database/books/delete-books.sql",
+            executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(scripts = "classpath:database/books/add-books.sql",
             executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(scripts = "classpath:database/books/delete-books.sql",
