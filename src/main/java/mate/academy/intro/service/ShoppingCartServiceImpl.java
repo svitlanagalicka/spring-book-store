@@ -1,6 +1,7 @@
 package mate.academy.intro.service;
 
 import jakarta.validation.Valid;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import mate.academy.intro.dto.CartItemRequestDto;
 import mate.academy.intro.dto.ShoppingCartDto;
@@ -46,12 +47,24 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
         ShoppingCart shoppingCart = shoppingCartRepository.findByUserId(userId)
                 .orElseThrow(() ->
                         new EntityNotFoundException("Shopping cart not found for user:" + userId));
+
         Book book = bookRepository.findByIdWithCategory(cartItemRequestDto.getBookId())
-                .orElseThrow(() -> new EntityNotFoundException("Book not found"));
-        CartItem cartItem = new CartItem();
-        cartItem.setBook(book);
-        cartItem.setQuantity(cartItemRequestDto.getQuantity());
-        cartItem.setShoppingCart(shoppingCart);
+                    .orElseThrow(() -> new EntityNotFoundException("Book not found"));
+
+        Optional<CartItem> existCartItem = shoppingCart.getCartItems().stream()
+                .filter(item -> item.getBook().getId().equals(book.getId()))
+                        .findFirst();
+        CartItem cartItem;
+        if (existCartItem.isPresent()) {
+            cartItem = existCartItem.get();
+            cartItem.setQuantity(cartItem.getQuantity() + cartItemRequestDto.getQuantity());
+        } else {
+            cartItem = new CartItem();
+            cartItem.setBook(book);
+            cartItem.setQuantity(cartItemRequestDto.getQuantity());
+            cartItem.setShoppingCart(shoppingCart);
+            shoppingCart.getCartItems().add(cartItem);
+        }
         cartItemRepository.save(cartItem);
         return shoppingCartMapper.toShoppingCartDto(shoppingCart);
     }
@@ -63,7 +76,7 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
                 .orElseThrow(() ->
                         new EntityNotFoundException("Shopping cart not found for user:" + userId));
         CartItem cartItem = cartItemRepository
-                .findByIdAndShoppingCartId(shoppingCart.getId(), cartItemId)
+                .findByIdAndShoppingCartId(cartItemId, shoppingCart.getId())
                 .orElseThrow(()
                         -> new EntityNotFoundException("Cart item not found:" + cartItemId));
         cartItem.setQuantity(quantity.getQuantity());
