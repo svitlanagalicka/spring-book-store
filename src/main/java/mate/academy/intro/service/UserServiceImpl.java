@@ -5,7 +5,6 @@ import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import mate.academy.intro.dto.UserRegistrationRequestDto;
 import mate.academy.intro.dto.UserResponseDto;
-import mate.academy.intro.exception.EntityNotFoundException;
 import mate.academy.intro.exception.RegistrationException;
 import mate.academy.intro.mapper.UserMapper;
 import mate.academy.intro.model.Role;
@@ -38,12 +37,5 @@ public class UserServiceImpl implements UserService {
         userRepository.save(user);
         shoppingCartService.createShoppingCartForUser(user);
         return userMapper.userToUserDto(user);
-    }
-
-    @Override
-    public Long findIdByEmail(String email) {
-        return userRepository.findByEmail(email)
-                .orElseThrow(() -> new EntityNotFoundException("User not found by email:" + email))
-                .getId();
     }
 }

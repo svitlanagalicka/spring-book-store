@@ -43,9 +43,8 @@ public class ShoppingCartController {
     @Operation(summary = "Add book to cart", description = "Add book to the shopping cart")
     public ShoppingCartDto addItemToCart(Authentication authentication,
                               @RequestBody @Valid CartItemRequestDto cartItemRequestDto) {
-        String email = authentication.getName();
-        Long userId = userService.findIdByEmail(email);
-        return shoppingCartService.addItemToCart(userId, cartItemRequestDto);
+        User user = (User) authentication.getPrincipal();
+        return shoppingCartService.addItemToCart(user.getId(), cartItemRequestDto);
     }
 
     @PutMapping("/cart-items/{cartItemId}")

@@ -6,6 +6,4 @@ import mate.academy.intro.exception.RegistrationException;
 
 public interface UserService {
     UserResponseDto register(UserRegistrationRequestDto requestDto) throws RegistrationException;
-
-    Long findIdByEmail(String email);
 }

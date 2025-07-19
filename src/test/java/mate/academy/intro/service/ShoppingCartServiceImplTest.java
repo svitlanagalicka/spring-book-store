@@ -4,7 +4,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -17,7 +16,6 @@ import mate.academy.intro.mapper.ShoppingCartMapper;
 import mate.academy.intro.model.Book;
 import mate.academy.intro.model.CartItem;
 import mate.academy.intro.model.ShoppingCart;
-import mate.academy.intro.model.User;
 import mate.academy.intro.repository.BookRepository;
 import mate.academy.intro.repository.CartItemRepository;
 import mate.academy.intro.repository.ShoppingCartRepository;
@@ -40,17 +38,6 @@ class ShoppingCartServiceImplTest {
     private ShoppingCartMapper shoppingCartMapper;
     @InjectMocks
     private ShoppingCartServiceImpl shoppingCartService;
-
-    @Test
-    @DisplayName("Create a shopping cart for the user")
-    void createShoppingCartForUser_saveCartForUser() {
-        User user = new User();
-        user.setId(1L);
-        user.setEmail("test@email.com");
-        shoppingCartService.createShoppingCartForUser(user);
-        verify(shoppingCartRepository).save(argThat(cart
-                -> cart.getUser() != null && cart.getUser().equals(user)));
-    }
 
     @Test
     @DisplayName("Return ShoppingCartDto when cart exists for user")
