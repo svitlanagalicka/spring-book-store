@@ -1,6 +1,7 @@
 package mate.academy.intro.model;
 
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
@@ -33,4 +34,7 @@ public class ShoppingCart {
 
     @OneToMany(mappedBy = "shoppingCart", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<CartItem> cartItems = new HashSet<>();
+
+    @Column(nullable = false, name = "is_deleted", columnDefinition = "TINYINT(1)")
+    private boolean isDeleted = false;
 }
