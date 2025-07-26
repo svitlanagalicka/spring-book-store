@@ -115,12 +115,12 @@ class BookServiceImplTest {
         bookDto.setCoverImage(book.getCoverImage());
         Long id = 1L;
 
-        when(bookRepository.findById(id)).thenReturn(Optional.of(book));
+        when(bookRepository.findByIdWithCategory(id)).thenReturn(Optional.of(book));
         when(bookMapper.bookToBookDto(book)).thenReturn(bookDto);
 
         BookDto result = bookService.getBookById(id);
         assertEquals(bookDto, result);
-        verify(bookRepository).findById(id);
+        verify(bookRepository).findByIdWithCategory(id);
         verify(bookMapper).bookToBookDto(book);
     }
 
@@ -128,11 +128,11 @@ class BookServiceImplTest {
     @DisplayName("Throws an error if the book with the specified identifier does not exist")
     void getBookById_throwEntityNotFoundException_whenBookNotFound() {
         Long id = 999L;
-        when(bookRepository.findById(id)).thenReturn(Optional.empty());
+        when(bookRepository.findByIdWithCategory(id)).thenReturn(Optional.empty());
         EntityNotFoundException exception = assertThrows(EntityNotFoundException.class,
                 () -> bookService.getBookById(id));
         assertTrue(exception.getMessage().contains("Book not found with id 999"));
-        verify(bookRepository).findById(id);
+        verify(bookRepository).findByIdWithCategory(id);
     }
 
     @Test
